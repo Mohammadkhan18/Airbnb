@@ -34,9 +34,17 @@ const useFavorite = ({ listingId, currentUser }: IUseFavorite) => {
       let request;
 
       if (hasFavorited) {
-        request = () => axios.delete(`/api/favorites/${listingId}`);
+        request = () => axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}/favorites/${listingId}/`,{
+          headers:{
+            'X-User-Id': currentUser.id,
+          }
+        });
       } else {
-        request = () => axios.post(`/api/favorites/${listingId}`);
+        request = () => axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/favorites/${listingId}/`,{},{
+          headers:{
+            'X-User-Id': currentUser.id,
+          }
+        });
       }
 
       await request();

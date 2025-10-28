@@ -26,7 +26,11 @@ const TripsClient: React.FC<TripsClientProps> = ({
   const onCancel = useCallback((id: string) => {
     setDeletingId(id);
 
-    axios.delete(`/api/reservations/${id}`)
+    axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}/reservation/${id}/`,{
+      headers:{
+        'X-User-Id': currentUser?.id,
+      }
+    },)
     .then(() => {
       toast.success('Reservation cancelled');
       router.refresh();

@@ -22,11 +22,17 @@ const PropertiesClient: React.FC<PropertiesClientProps> = ({
 }) => {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState('');
+  const userId = currentUser?.id;
 
   const onDelete = useCallback((id: string) => {
     setDeletingId(id);
 
-    axios.delete(`/api/listings/${id}`)
+    axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}/listings/${id}/`,{
+         headers: {
+      'X-User-Id': userId,
+      }
+    },
+    )
     .then(() => {
       toast.success('Listing deleted');
       router.refresh();

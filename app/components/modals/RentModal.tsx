@@ -31,10 +31,13 @@ enum STEPS {
   PRICE = 5,
 }
 
-const RentModal = () => {
+interface RentModalProps {
+  currentUser?: any;
+}
+
+const RentModal: React.FC<RentModalProps> = ({ currentUser }) => {
   const router = useRouter();
   const rentModal = useRentModal();
-
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(STEPS.CATEGORY);
 
@@ -90,27 +93,36 @@ const RentModal = () => {
   }
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    if (step !== STEPS.PRICE) {
-      return onNext();
-    }
-    
-    setIsLoading(true);
-
-    axios.post('/api/listings', data)
-    .then(() => {
-      toast.success('Listing created!');
-      router.refresh();
-      reset();
-      setStep(STEPS.CATEGORY)
-      rentModal.onClose();
-    })
-    .catch(() => {
-      toast.error('Something went wrong.');
-    })
-    .finally(() => {
-      setIsLoading(false);
-    })
+  if (step !== STEPS.PRICE) {
+    return onNext();
   }
+
+  setIsLoading(true);
+  console.log(currentUser,'users');
+  const userId = currentUser?.id; 
+
+  axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/listings/`, data, {
+    headers: {
+      'X-User-Id': userId,
+      'Content-Type': 'application/json',
+    },
+  })
+  .then(() => {
+    toast.success('Listing created!');
+    router.refresh();
+    reset();
+    setStep(STEPS.CATEGORY);
+    rentModal.onClose();
+  })
+  .catch((err) => {
+    console.error(err);
+    toast.error('Something went wrong.');
+  })
+  .finally(() => {
+    setIsLoading(false);
+  });
+};
+
 
   const actionLabel = useMemo(() => {
     if (step === STEPS.PRICE) {

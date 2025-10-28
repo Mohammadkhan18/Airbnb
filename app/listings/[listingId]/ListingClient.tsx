@@ -68,12 +68,18 @@ const ListingClient: React.FC<ListingClientProps> = ({
       }
       setIsLoading(true);
 
-      axios.post('/api/reservations', {
+      axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/reservation/`, {
         totalPrice,
         startDate: dateRange.startDate,
         endDate: dateRange.endDate,
         listingId: listing?.id
-      })
+      },
+    {
+      headers:{
+        'X-User-Id': currentUser.id,
+        "Content-Type": "application/json"
+    } }
+    )
       .then(() => {
         toast.success('Listing reserved!');
         setDateRange(initialDateRange);
